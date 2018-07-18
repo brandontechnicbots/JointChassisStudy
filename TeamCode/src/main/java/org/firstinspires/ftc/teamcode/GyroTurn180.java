@@ -9,30 +9,31 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-// This code executes the 7th test (180 degree turn offset).
+import java.util.Locale;
+
+// This code executes the 7th test (90 degree turn offset).
 // The full specification is in the Engineering Notebook.
-// This code was written for the Rev Robotics IMU.
-// The Modern Robotics system will use slightly different gyroscope code.
-@Autonomous(name = "Test 7: 180 degree turn offset", group = "Linear Opmode")
+@Autonomous(name = "Test 7: 160 degree turn offset", group = "Linear Opmode")
 public class GyroTurn180 extends LinearOpMode {
 
     private Robot robot  = new Robot();
     private ElapsedTime runtime = new ElapsedTime();
     private BNO055IMU imu;
-    private static double TURN_P = 0.03;
+    private static double TURN_P = 0.01;
 
     @Override
     public void runOpMode() {
         robot.init(hardwareMap);
-        imu = hardwareMap.get(BNO055IMU.class, "IMU");
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
         imuInit();
 
         waitForStart();
         runtime.reset();
 
-        // Turn the robot for 180 degrees
-        gyroTurn(180);
+        // Turn the robot for 160 degrees
+        gyroTurn(160);
 
         // Stop the robot
         robot.stopRobot();
@@ -40,17 +41,30 @@ public class GyroTurn180 extends LinearOpMode {
 
     private void gyroTurn(double deg) {
         double target_angle = getHeading() - deg;
-        while (Math.abs((target_angle - getHeading())% 360) > 1 && opModeIsActive()) {
+        while (Math.abs((target_angle - getHeading())% 360) > 3 && opModeIsActive()) {
             double error_degrees = (target_angle - getHeading()) % 360; //Compute Error
             double motor_output = Range.clip(error_degrees * TURN_P, -.6 ,.6); //Get Correction
             // Send corresponding powers to the motors
-            robot.leftFrontMotor.setPower(-1 * motor_output);
-            robot.leftBackMotor.setPower(-1 * motor_output);
-            robot.rightFrontMotor.setPower(motor_output);
-            robot.rightBackMotor.setPower(motor_output);
+            robot.leftFrontMotor.setPower(1 * motor_output);
+            robot.leftBackMotor.setPower(1 * motor_output);
+            robot.rightFrontMotor.setPower(-1*motor_output);
+            robot.rightBackMotor.setPower(-1*motor_output);
+
+            Orientation angles = imu.getAngularOrientation (AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            telemetry.addData("Spin Target : ",target_angle);
+            telemetry.addData("Spin Degree : ",String.format(Locale.getDefault(), "%.1f", angles.firstAngle*-1));
+            telemetry.update();
         }
 
         robot.stopRobot();
+
+        //extra 6 seconds to display the values for reading
+        while (runtime.milliseconds() < 6000 && opModeIsActive()) {
+            Orientation angles = imu.getAngularOrientation (AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            telemetry.addData("Spin Target : ",target_angle);
+            telemetry.addData("Spin Degree : ",String.format(Locale.getDefault(), "%.1f", angles.firstAngle*-1));
+            telemetry.update();
+        }
     }
 
     private float getHeading() {
@@ -66,7 +80,7 @@ public class GyroTurn180 extends LinearOpMode {
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json";
         parameters.loggingEnabled = false;
-        parameters.loggingTag = "IMU";
+        parameters.loggingTag = "imu";
         imu.initialize(parameters);
     }
 }

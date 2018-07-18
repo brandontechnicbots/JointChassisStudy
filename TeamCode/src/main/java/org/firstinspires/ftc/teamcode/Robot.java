@@ -31,6 +31,12 @@ public class Robot {
         rightBackMotor = hwMap.get(DcMotor.class, "right_back");
 
         // Set all motors direction
+        leftFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftBackMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBackMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        // Set all motors direction
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
         leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
         rightFrontMotor.setDirection(DcMotor.Direction.FORWARD);
