@@ -23,7 +23,7 @@ public class GyroTurn90 extends LinearOpMode {
     private Robot robot  = new Robot();
     private ElapsedTime runtime = new ElapsedTime();
     private BNO055IMU imu;
-    private static double TURN_P = 0.01;
+    private static double TURN_P = 0.005;
 
     @Override
     public void runOpMode() {

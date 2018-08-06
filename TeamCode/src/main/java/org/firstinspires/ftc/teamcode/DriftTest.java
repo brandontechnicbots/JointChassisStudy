@@ -37,7 +37,7 @@ public class DriftTest extends LinearOpMode {
         // Reset the encoder on front left motor
         robot.leftFrontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.leftFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
+        runtime.reset();
         // Run the robot forward for the target number of ticks
         while (robot.leftFrontMotor.getCurrentPosition() < targetTicks && opModeIsActive()) {
             robot.leftFrontMotor.setPower(1);
@@ -46,15 +46,18 @@ public class DriftTest extends LinearOpMode {
             robot.rightBackMotor.setPower(1);
             telemetry.addData("Target Position: ", targetTicks);
             telemetry.addData("Current Position: ", robot.leftFrontMotor.getCurrentPosition());
+            telemetry.addData("Time: ", getRuntime());
             telemetry.update();
         }
+        double time=getRuntime();
         // Stop the robot
         robot.stopRobot();
 
-        //extra 6 seconds to display the values for reading
-        while (runtime.milliseconds() < 6000 && opModeIsActive()) {
+        //extra 8 seconds to display the values for reading
+        while (runtime.milliseconds() < 8000 && opModeIsActive()) {
             telemetry.addData("Target Position: ", targetTicks);
             telemetry.addData("Current Position: ", robot.leftFrontMotor.getCurrentPosition());
+            telemetry.addData("Time: ", time);
             telemetry.update();
         }
     }

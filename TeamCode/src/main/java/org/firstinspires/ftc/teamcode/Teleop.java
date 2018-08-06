@@ -26,8 +26,8 @@ public class Teleop extends OpMode {
     // Basic Tank Drive to control the robot.
     @Override
     public void loop(){
-        leftThrottle = gamepad1.left_stick_y;
-        rightThrottle = gamepad1.right_stick_y;
+        leftThrottle = -gamepad1.right_stick_y;
+        rightThrottle = -gamepad1.left_stick_y;
 
         robot.leftFrontMotor.setPower(leftThrottle);
         robot.leftBackMotor.setPower(leftThrottle);

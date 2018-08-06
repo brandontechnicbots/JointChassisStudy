@@ -18,22 +18,25 @@ import java.util.Locale;
 @Autonomous(name = "Test 7: 160 degree turn offset", group = "Linear Opmode")
 public class GyroTurn180 extends LinearOpMode {
 
-    private Robot robot  = new Robot();
+    private Robot robot = new Robot();
     private ElapsedTime runtime = new ElapsedTime();
     private BNO055IMU imu;
     private static double TURN_P = 0.01;
+    private static float convertedDegree;
 
     @Override
     public void runOpMode() {
         robot.init(hardwareMap);
+
         imu = hardwareMap.get(BNO055IMU.class, "imu");
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         imuInit();
 
         waitForStart();
         runtime.reset();
 
-        // Turn the robot for 160 degrees
-        gyroTurn(160);
+        // Turn the robot for 180 degrees
+        gyroTurn(180);
 
         // Stop the robot
         robot.stopRobot();
@@ -41,18 +44,17 @@ public class GyroTurn180 extends LinearOpMode {
 
     private void gyroTurn(double deg) {
         double target_angle = getHeading() - deg;
-        while (Math.abs((target_angle - getHeading())% 360) > 3 && opModeIsActive()) {
+        while (Math.abs((target_angle - getHeading()) % 360) > 3 && opModeIsActive()) {
             double error_degrees = (target_angle - getHeading()) % 360; //Compute Error
-            double motor_output = Range.clip(error_degrees * TURN_P, -.6 ,.6); //Get Correction
+            double motor_output = Range.clip(error_degrees * TURN_P, -.6, .6); //Get Correction
             // Send corresponding powers to the motors
-            robot.leftFrontMotor.setPower(1 * motor_output);
-            robot.leftBackMotor.setPower(1 * motor_output);
-            robot.rightFrontMotor.setPower(-1*motor_output);
-            robot.rightBackMotor.setPower(-1*motor_output);
+            robot.leftFrontMotor.setPower(-1 * motor_output);
+            robot.leftBackMotor.setPower(-1 * motor_output);
+            robot.rightFrontMotor.setPower(1 * motor_output);
+            robot.rightBackMotor.setPower(1 * motor_output);
 
-            Orientation angles = imu.getAngularOrientation (AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            telemetry.addData("Spin Target : ",target_angle);
-            telemetry.addData("Spin Degree : ",String.format(Locale.getDefault(), "%.1f", angles.firstAngle*-1));
+            telemetry.addData("Spin Target : ", target_angle);
+            telemetry.addData("Spin Degree : ", String.format(Locale.getDefault(), "%.1f", getHeading() * -1));
             telemetry.update();
         }
 
@@ -60,15 +62,23 @@ public class GyroTurn180 extends LinearOpMode {
 
         //extra 6 seconds to display the values for reading
         while (runtime.milliseconds() < 6000 && opModeIsActive()) {
-            Orientation angles = imu.getAngularOrientation (AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            telemetry.addData("Spin Target : ",target_angle);
-            telemetry.addData("Spin Degree : ",String.format(Locale.getDefault(), "%.1f", angles.firstAngle*-1));
+            telemetry.addData("Spin Target : ", target_angle);
+            telemetry.addData("Spin Degree : ", String.format(Locale.getDefault(), "%.1f", getHeading() * -1));
             telemetry.update();
         }
     }
 
     private float getHeading() {
-        return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        //Algorithm to convert the angle range from 180-(-180) to 0-360
+        if (angles.firstAngle >= 0) {
+            convertedDegree = angles.firstAngle;
+        } else {
+            convertedDegree = 360 + angles.firstAngle;
+        }
+        return convertedDegree;
     }
 
 
