@@ -5,17 +5,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
-import java.util.Locale;
-
 // This code executes test 6 (Straight Line Drift Test).
 // The full specification is in the Engineering Notebook.
-@Autonomous(name = "Test 6: Straight Line Drift Test", group = "Linear Opmode")
-public class DriftTest extends LinearOpMode {
+@Autonomous(name = "Test 5: Pull Test", group = "Linear Opmode")
+public class PullTest extends LinearOpMode {
 
     private Robot robot  = new Robot();
     private ElapsedTime runtime = new ElapsedTime();
@@ -40,30 +33,17 @@ public class DriftTest extends LinearOpMode {
         runtime.reset();
         // Run the robot forward for the target number of ticks
         while (Math.abs(robot.leftFrontMotor.getCurrentPosition()) < targetTicks && opModeIsActive()) {
-            if (Math.abs((robot.leftFrontMotor.getCurrentPosition() / -targetTicks)) < 0.1){
-                robot.leftFrontMotor.setPower(0.3);
-                robot.leftBackMotor.setPower(0.3);
-                robot.rightFrontMotor.setPower(0.3);
-                robot.rightBackMotor.setPower(0.3);
-            }
-            else if (Math.abs((robot.leftFrontMotor.getCurrentPosition() / targetTicks)) < 0.2){
-                robot.leftFrontMotor.setPower(0.6);
-                robot.leftBackMotor.setPower(0.6);
-                robot.rightFrontMotor.setPower(0.6);
-                robot.rightBackMotor.setPower(0.6);
-            }
-            else {
-                robot.leftFrontMotor.setPower(1);
-                robot.leftBackMotor.setPower(1);
-                robot.rightFrontMotor.setPower(1);
-                robot.rightBackMotor.setPower(1);
-            }
+
+            robot.leftFrontMotor.setPower(1);
+            robot.leftBackMotor.setPower(1);
+            robot.rightFrontMotor.setPower(1);
+            robot.rightBackMotor.setPower(1);
             telemetry.addData("Target Position: ", targetTicks);
             telemetry.addData("Current Position: ", robot.leftFrontMotor.getCurrentPosition());
-            telemetry.addData("Time (ms): ", runtime.milliseconds());
+            telemetry.addData("Time: ", getRuntime());
             telemetry.update();
         }
-        double time=runtime.milliseconds();
+        double time=getRuntime();
         // Stop the robot
         robot.stopRobot();
 
@@ -71,7 +51,7 @@ public class DriftTest extends LinearOpMode {
         while (runtime.milliseconds() < 8000 && opModeIsActive()) {
             telemetry.addData("Target Position: ", targetTicks);
             telemetry.addData("Current Position: ", robot.leftFrontMotor.getCurrentPosition());
-            telemetry.addData("Time (ms): ", time);
+            telemetry.addData("Time: ", time);
             telemetry.update();
         }
     }
